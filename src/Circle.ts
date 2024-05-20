@@ -4,7 +4,6 @@ export class Circle {
   y: number;
   radius = 25;
   color = "red";
-  vx = 5;
   vy = 1;
   constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
     this.x = x;
