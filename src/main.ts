@@ -30,8 +30,6 @@ function draw() {
       circle.vy += mass;
       circle.y += circle.vy;
     }
-
-    console.log(circle.vy);
   }
 
   window.requestAnimationFrame(draw);
@@ -44,13 +42,18 @@ document.getElementById("start")?.addEventListener("click", function () {
 
 function start() {
   canvas.addEventListener("mousedown", function (e) {
-    circles.push(
-      new Circle(
-        ctx,
-        e.clientX - canvas.offsetLeft,
-        e.clientY - canvas.offsetTop
-      )
-    );
+    const x = e.clientX - canvas.offsetLeft;
+    const y = e.clientY - canvas.offsetTop;
+    const radius = 25;
+    if (
+      x - radius < 0 ||
+      x + radius > canvas.width ||
+      y - radius < 0 ||
+      y + radius > canvas.height
+    ) {
+      return;
+    }
+    circles.push(new Circle(ctx, x, y, radius));
   });
 
   window.requestAnimationFrame(draw);

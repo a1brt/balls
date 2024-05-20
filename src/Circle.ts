@@ -2,13 +2,14 @@ export class Circle {
   ctx: CanvasRenderingContext2D;
   x: number;
   y: number;
-  radius = 25;
+  radius:number;
   color = "red";
   vy = 1;
-  constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  constructor(ctx: CanvasRenderingContext2D, x: number, y: number, radius:number) {
+    this.ctx = ctx;
     this.x = x;
     this.y = y;
-    this.ctx = ctx;
+    this.radius = radius;
   }
 
   draw() {
