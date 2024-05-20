@@ -5,7 +5,7 @@ export class Circle {
   radius = 25;
   color = "red";
   vx = 5;
-  vy = 2;
+  vy = 1;
   constructor(ctx: CanvasRenderingContext2D, x: number, y: number) {
     this.x = x;
     this.y = y;
@@ -18,5 +18,6 @@ export class Circle {
     this.ctx.closePath();
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
+    this.ctx.stroke();
   }
 }

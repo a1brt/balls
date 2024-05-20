@@ -30,14 +30,11 @@ function draw() {
 
     if (circle.y + circle.radius >= canvas.height) {
       circle.y = canvas.height - circle.radius;
-      circle.vy = -circle.vy * 0.75; // Invert velocity and reduce it to simulate energy loss
+      circle.vy = -circle.vy * 0.75; 
 
-      // Stop the ball when the velocity is below a threshold
       if (Math.abs(circle.vy) < 1.19) {
         circle.vy = 0;
-      }
-      console.log(circle.vy);
-      
+      }      
     }
   }
 
