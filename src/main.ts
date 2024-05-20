@@ -19,27 +19,24 @@ function draw() {
   
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for(let circle of circles){
-    console.log(circle);
-    
-
     circle.draw();
-    circle.x += circle.vx;
     circle.y += circle.vy;
     circle.vy *= 0.99;
     circle.vy += 0.25;
-  
+    console.log(circle.vy);
+    
     if (
       circle.y + circle.vy > canvas.height - circle.radius ||
       circle.y + circle.vy < circle.radius
     ) {
       circle.vy = -circle.vy;
     }
-    if (
-      circle.x + circle.vx > canvas.width - circle.radius ||
-      circle.x + circle.vx < circle.radius
-    ) {
-      circle.vx = -circle.vx;
-    }
+    // if (
+    //   circle.x + circle.vx > canvas.width - circle.radius ||
+    //   circle.x + circle.vx < circle.radius
+    // ) {
+    //   circle.vx = -circle.vx;
+    // }
   
   }
   window.requestAnimationFrame(draw);
@@ -52,8 +49,7 @@ document.getElementById("start")?.addEventListener("click", function () {
 
 function start() {
   canvas.addEventListener("mousedown", function (e) {
-    circles.push(new Circle(ctx, e.clientX, e.clientY));
-    console.log(circles);
+    circles.push(new Circle(ctx, e.clientX- canvas.offsetLeft, e.clientY- canvas.offsetTop));
   });
 
   window.requestAnimationFrame(draw);
