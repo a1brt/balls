@@ -15,30 +15,32 @@ window.onload = () => {
   ctx = c;
 };
 
+
 function draw() {
-  
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for(let circle of circles){
+
+  for (let circle of circles) {
     circle.draw();
-    circle.y += circle.vy;
-    circle.vy *= 0.99;
-    circle.vy += 0.25;
-    console.log(circle.vy);
-    
-    if (
-      circle.y + circle.vy > canvas.height - circle.radius ||
-      circle.y + circle.vy < circle.radius
-    ) {
-      circle.vy = -circle.vy;
+
+    if (Math.abs(circle.vy) > 0.01 || circle.y + circle.radius < canvas.height) {
+      circle.y += circle.vy;
+      circle.vy *= 0.99; // Damping factor for velocity
+      circle.vy += 0.25; // Gravity
     }
-    // if (
-    //   circle.x + circle.vx > canvas.width - circle.radius ||
-    //   circle.x + circle.vx < circle.radius
-    // ) {
-    //   circle.vx = -circle.vx;
-    // }
-  
+
+    if (circle.y + circle.radius >= canvas.height) {
+      circle.y = canvas.height - circle.radius;
+      circle.vy = -circle.vy * 0.75; // Invert velocity and reduce it to simulate energy loss
+
+      // Stop the ball when the velocity is below a threshold
+      if (Math.abs(circle.vy) < 1.19) {
+        circle.vy = 0;
+      }
+      console.log(circle.vy);
+      
+    }
   }
+
   window.requestAnimationFrame(draw);
 }
 
