@@ -1,9 +1,11 @@
 import { Circle } from "./Circle";
+import { Goal } from "./Goal";
 import "./style.css";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
-const circles: Circle[] = [];
 let ctx: CanvasRenderingContext2D;
+const circles: Circle[] = [];
+const goals: Goal[] = [];
 
 let elasticity = 0.5;
 let gravity = 0.5;
@@ -42,6 +44,12 @@ function draw() {
     }
   }
 
+  console.log(goals);
+
+  for (let goal of goals) {
+    goal.draw();
+  }
+
   window.requestAnimationFrame(draw);
 }
 
@@ -61,6 +69,8 @@ gravitySlider?.addEventListener("input", function () {
 });
 
 function start() {
+  goals.push(new Goal(ctx, 200, 200, circleRadius * 2));
+
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
     const y = e.clientY - canvas.offsetTop;
