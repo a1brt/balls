@@ -44,10 +44,13 @@ function draw() {
     }
   }
 
-  console.log(goals);
-
   for (let goal of goals) {
     goal.draw();
+
+    if (goal.x + goal.width > canvas.width || goal.x <= 0) {
+      goal.vx = -goal.vx;
+    }
+    goal.x += goal.vx
   }
 
   window.requestAnimationFrame(draw);
