@@ -31,11 +31,11 @@ export class Circle {
     this.ctx.stroke();
   }
 
-  drawTransparent() {
+  drawBlack() {
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, true);
     this.ctx.closePath();
-    this.ctx.fillStyle = "rgba(0,0,0,0.5)";
+    this.ctx.fillStyle = "black";
     this.ctx.fill();
     this.ctx.stroke();
   }

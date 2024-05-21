@@ -17,7 +17,7 @@ window.onload = () => {
     console.error("Canvas context is not available");
     return;
   }
-  
+
   ctx = c;
   mouseCircle = new Circle(ctx, 0, 0, circleRadius, 0);
 };
@@ -26,7 +26,7 @@ window.onload = () => {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
-    mouseCircle.drawTransparent();
+    mouseCircle.drawBlack();
   }
   for (let circle of circles) {
     circle.draw();
