@@ -69,7 +69,7 @@ gravitySlider?.addEventListener("input", function () {
 });
 
 function start() {
-  goals.push(new Goal(ctx, 200, 200, circleRadius * 2));
+  goals.push(new Goal(ctx, 200, 200, circleRadius * 2.5));
 
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
