@@ -7,6 +7,8 @@ let ctx: CanvasRenderingContext2D;
 
 let elasticity = 0.5;
 let gravity = 0.5;
+let mouseCircle: Circle;
+const circleRadius = 25;
 
 window.onload = () => {
   const c = canvas.getContext("2d");
@@ -15,18 +17,20 @@ window.onload = () => {
     console.error("Canvas context is not available");
     return;
   }
+  
   ctx = c;
+  mouseCircle = new Circle(ctx, 0, 0, circleRadius, 0);
 };
-
-
-// I guess this was suposed to tick nuy I don't understand what I am 
+// I guess this was suposed to tick nuy I don't understand what I am
 // supposed to do with deltaTime
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+  if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
+    mouseCircle.drawTransparent();
+  }
   for (let circle of circles) {
     circle.draw();
-    if(gravity === 0){
+    if (gravity === 0) {
       continue;
     }
     if (circle.y + circle.radius > canvas.height) {
@@ -46,33 +50,40 @@ document.getElementById("start")?.addEventListener("click", function () {
   start();
 });
 
-let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity")
+let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
 elasticitySlider?.addEventListener("input", function () {
-  elasticity = +this.value/100
+  elasticity = +this.value / 100;
 });
 
-let gravitySlider = <HTMLInputElement>document.getElementById("gravity")
+let gravitySlider = <HTMLInputElement>document.getElementById("gravity");
 gravitySlider?.addEventListener("input", function () {
-  gravity = +this.value/100
-  console.log(gravity);
-  
+  gravity = +this.value / 100;
 });
 
 function start() {
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
     const y = e.clientY - canvas.offsetTop;
-    const radius = 25;
-    if (
-      x - radius < 0 ||
-      x + radius > canvas.width ||
-      y - radius < 0 ||
-      y + radius > canvas.height
-    ) {
+
+    if (canNotDrawCricle(x, y, circleRadius)) {
       return;
     }
-    circles.push(new Circle(ctx, x, y, radius, elasticity));
+    circles.push(new Circle(ctx, x, y, circleRadius, elasticity));
   });
-
+  canvas.addEventListener("mousemove", function (e) {
+    const x = e.clientX - canvas.offsetLeft;
+    const y = e.clientY - canvas.offsetTop;
+    mouseCircle.x = x;
+    mouseCircle.y = y;
+  });
   window.requestAnimationFrame(draw);
+}
+
+function canNotDrawCricle(x: number, y: number, radius: number): boolean {
+  return (
+    x - radius < 0 ||
+    x + radius > canvas.width ||
+    y - radius < 0 ||
+    y + radius > canvas.height
+  );
 }
