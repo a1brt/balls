@@ -6,4 +6,19 @@
  width: 100%;
  display: flex;
  justify-content: center;
+ gap: 30px;
+}
+
+.controlls{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.slidecontainer{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 10px;
 }

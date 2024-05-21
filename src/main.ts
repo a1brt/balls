@@ -5,8 +5,9 @@ const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 const circles: Circle[] = [];
 let ctx: CanvasRenderingContext2D;
 
-let rigidity = 0.7;
-let mass = 0.5;
+let elasticity = 0.5;
+let gravity = 0.5;
+
 window.onload = () => {
   const c = canvas.getContext("2d");
 
@@ -17,17 +18,22 @@ window.onload = () => {
   ctx = c;
 };
 
+
+// I guess this was suposed to tick nuy I don't understand what I am 
+// supposed to do with deltaTime
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   for (let circle of circles) {
     circle.draw();
-
+    if(gravity === 0){
+      continue;
+    }
     if (circle.y + circle.radius > canvas.height) {
-      circle.vy = -circle.vy * rigidity;
+      circle.vy = -circle.vy * circle.elasticity;
       circle.y = canvas.height - circle.radius;
     } else {
-      circle.vy += mass;
+      circle.vy += gravity;
       circle.y += circle.vy;
     }
   }
@@ -36,8 +42,20 @@ function draw() {
 }
 
 document.getElementById("start")?.addEventListener("click", function () {
-  this.style.display = "none";
+  this.style.visibility = "hidden";
   start();
+});
+
+let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity")
+elasticitySlider?.addEventListener("input", function () {
+  elasticity = +this.value/100
+});
+
+let gravitySlider = <HTMLInputElement>document.getElementById("gravity")
+gravitySlider?.addEventListener("input", function () {
+  gravity = +this.value/100
+  console.log(gravity);
+  
 });
 
 function start() {
@@ -53,7 +71,7 @@ function start() {
     ) {
       return;
     }
-    circles.push(new Circle(ctx, x, y, radius));
+    circles.push(new Circle(ctx, x, y, radius, elasticity));
   });
 
   window.requestAnimationFrame(draw);

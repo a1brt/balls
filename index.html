@@ -8,8 +8,18 @@
   <body>
     <div class="container">
       <canvas id="canvas" width="350" height="500"></canvas>
-      <button id="start" type="button">Start</button>
-    </div>
+      <div class="controlls">
+        <button id="start" type="button">Start</button>
+        <div class="slidecontainer">
+          <label for="elasticity">elasticity</label>
+          <input type="range" min="0" max="100" value="50" class="slider" id="elasticity">
+        </div>
+        <div class="slidecontainer">
+          <label for="gravity">gravity</label>
+          <input type="range" min="0" max="100" value="50" class="slider" id="gravity">
+        </div>
+      </div>
+      </div>
     <script type="module" src="/src/main.ts" defer></script>
   </body>
 </html>
