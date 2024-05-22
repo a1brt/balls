@@ -19,6 +19,19 @@ const ballRadius = 25;
 
 let currentRequest: number | null = null;
 
+window.onload = () => {
+  const c = canvas.getContext("2d");
+
+  if (!c) {
+    console.error("Canvas context is not available");
+    return;
+  }
+
+  ctx = c;
+  mouseball = new Ball(ctx, 0, 0, ballRadius, 0);
+  start();
+};
+
 let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
 elasticitySlider?.addEventListener("input", function () {
   elasticity = +this.value / 100;
@@ -55,19 +68,6 @@ levels?.addEventListener("change", function () {
       break;
   }
 });
-
-window.onload = () => {
-  const c = canvas.getContext("2d");
-
-  if (!c) {
-    console.error("Canvas context is not available");
-    return;
-  }
-
-  ctx = c;
-  mouseball = new Ball(ctx, 0, 0, ballRadius, 0);
-  start();
-};
 
 function tick(currentTime: number) {
   if (gameState !== GameState.STARTED) {
