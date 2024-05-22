@@ -7,7 +7,7 @@ const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 let ctx: CanvasRenderingContext2D;
 const circles: Circle[] = [];
 const goals: Goal[] = [];
-
+let lastTime = 0;
 let elasticity = 0.5;
 let gravity = 0.5;
 let mouseCircle: Circle;
@@ -24,9 +24,10 @@ window.onload = () => {
   ctx = c;
   mouseCircle = new Circle(ctx, 0, 0, circleRadius, 0);
 };
-// I guess this was suposed to tick nuy I don't understand what I am
-// supposed to do with deltaTime
-function draw() {
+
+function tick(currentTime: number) {
+  const deltaTime = currentTime - lastTime;   // don't really know what to do with this
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
     mouseCircle.drawOrigin();
@@ -54,13 +55,14 @@ function draw() {
     goal.x += goal.vx;
 
     for (let circle of circles) {
-      if (checkCollision(goal, circle)) {
+      if (checkCollision(goal, circle) ) {
         console.log("boom");
       }
     }
   }
-
-  window.requestAnimationFrame(draw);
+  lastTime = currentTime;
+  
+  window.requestAnimationFrame(tick);
 }
 
 document.getElementById("start")?.addEventListener("click", function () {
@@ -97,7 +99,7 @@ function start() {
     mouseCircle.x = x;
     mouseCircle.y = y;
   });
-  window.requestAnimationFrame(draw);
+  window.requestAnimationFrame(tick);
 }
 
 function canNotDrawCricle(x: number, y: number, radius: number): boolean {
