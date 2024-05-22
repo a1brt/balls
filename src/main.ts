@@ -17,6 +17,40 @@ let elasticity = 0.5;
 let gravity = 0.5;
 const circleRadius = 25;
 
+let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
+elasticitySlider?.addEventListener("input", function () {
+  elasticity = +this.value / 100;
+});
+
+let gravitySlider = <HTMLInputElement>document.getElementById("gravity");
+gravitySlider?.addEventListener("input", function () {
+  gravity = +this.value / 100;
+});
+
+let levels = <HTMLInputElement>document.getElementById("levels");
+levels?.addEventListener("change", function () {
+  switch (this.value) {
+    case "basic":
+      goals.clear();
+      break;
+    case "l1":
+      initGoals1();
+      break;
+    case "l2":
+      initGoals2();
+      break;
+    case "l3":
+      initGoals3();
+      break;
+    default:
+      console.error(
+        "Not scientifically possible error: level option not defined"
+      );
+      goals.clear();
+      break;
+  }
+});
+
 window.onload = () => {
   const c = canvas.getContext("2d");
 
@@ -61,7 +95,9 @@ function tick(currentTime: number) {
       goal.vx = -goal.vx;
     }
     goal.x += goal.vx;
+    goal.draw();
 
+    // check if any circle colides with the currecnt goal
     for (let circle of circles) {
       if (!checkCollision(goal, circle)) {
         continue;
@@ -73,7 +109,6 @@ function tick(currentTime: number) {
       }
       goals.delete(key);
     }
-    goal.draw();
   }
   lastTime = currentTime;
 
@@ -85,19 +120,8 @@ document.getElementById("start")?.addEventListener("click", function () {
   start();
 });
 
-let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
-elasticitySlider?.addEventListener("input", function () {
-  elasticity = +this.value / 100;
-});
-
-let gravitySlider = <HTMLInputElement>document.getElementById("gravity");
-gravitySlider?.addEventListener("input", function () {
-  gravity = +this.value / 100;
-});
-
 function start() {
   gameState = GameState.STARTED;
-  initGoals3();
 
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
@@ -117,7 +141,19 @@ function start() {
   requestAnimationFrame(tick);
 }
 
+function initGoals1() {
+  goals.clear();
+  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+}
+
+function initGoals2() {
+  goals.clear();
+  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
+}
+
 function initGoals3() {
+  goals.clear();
   goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
   goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
 }
