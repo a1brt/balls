@@ -1,5 +1,6 @@
 import { Circle } from "./Circle";
 import { Goal } from "./Goal";
+import { GoalType } from "./GoalTypes";
 import "./style.css";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
@@ -28,7 +29,7 @@ window.onload = () => {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
-    mouseCircle.drawBlack();
+    mouseCircle.drawOrigin();
   }
   for (let circle of circles) {
     circle.draw();
@@ -50,7 +51,13 @@ function draw() {
     if (goal.x + goal.width > canvas.width || goal.x <= 0) {
       goal.vx = -goal.vx;
     }
-    goal.x += goal.vx
+    goal.x += goal.vx;
+
+    for (let circle of circles) {
+      if (checkCollision(goal, circle)) {
+        console.log("boom");
+      }
+    }
   }
 
   window.requestAnimationFrame(draw);
@@ -72,7 +79,8 @@ gravitySlider?.addEventListener("input", function () {
 });
 
 function start() {
-  goals.push(new Goal(ctx, 200, 200, circleRadius * 2.5));
+  goals.push(new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+  goals.push(new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
 
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
@@ -99,4 +107,20 @@ function canNotDrawCricle(x: number, y: number, radius: number): boolean {
     y - radius < 0 ||
     y + radius > canvas.height
   );
+}
+
+function checkCollision(goal: Goal, circle: Circle): boolean {
+  // Calculate the closest point on the goal's rectangle to the circle's center
+  const closestX = Math.max(goal.x, Math.min(circle.x, goal.x + goal.width));
+  const closestY = Math.max(goal.y, Math.min(circle.y, goal.y + goal.height));
+
+  // Calculate the distance between the circle's center and this closest point
+  const distanceX = circle.x - closestX;
+  const distanceY = circle.y - closestY;
+
+  // Calculate the squared distance
+  const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+  // Check if the squared distance is less than the squared radius
+  return distanceSquared < circle.radius * circle.radius;
 }
