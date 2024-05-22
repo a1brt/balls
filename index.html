@@ -12,14 +12,36 @@
         <button id="start" type="button">Start</button>
         <div class="slidecontainer">
           <label for="elasticity">elasticity</label>
-          <input type="range" min="0" max="100" value="50" class="slider" id="elasticity">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            class="slider"
+            id="elasticity"
+          />
         </div>
         <div class="slidecontainer">
           <label for="gravity">gravity</label>
-          <input type="range" min="0" max="100" value="50" class="slider" id="gravity">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value="50"
+            class="slider"
+            id="gravity"
+          />
+        </div>
+        <div class="levels">
+          <select name="levels" id="levels">
+            <option value="basic" selected>Basic Requirements</option>
+            <option value="l1" selected>Level 1</option>
+            <option value="l2" selected>Level 2</option>
+            <option value="l3" selected>Level 3</option>
+          </select>
         </div>
       </div>
-      </div>
+    </div>
     <script type="module" src="/src/main.ts" defer></script>
   </body>
 </html>

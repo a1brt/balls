@@ -1,10 +1,12 @@
 import { Circle } from "./Circle";
+import { GameState } from "./GameState";
 import { Goal } from "./Goal";
 import { GoalType } from "./GoalTypes";
 import "./style.css";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 let ctx: CanvasRenderingContext2D;
+let gameState: GameState;
 
 let mouseCircle: Circle;
 const circles: Circle[] = [];
@@ -28,6 +30,11 @@ window.onload = () => {
 };
 
 function tick(currentTime: number) {
+  if (gameState !== GameState.STARTED) {
+    handleGameOver();
+    return;
+  }
+
   const deltaTime = currentTime - lastTime; // don't really know what to do with this
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -35,8 +42,8 @@ function tick(currentTime: number) {
     mouseCircle.drawOrigin();
   }
   for (let circle of circles) {
-    circle.draw();
     if (gravity === 0) {
+      circle.draw();
       continue;
     }
     if (circle.y + circle.radius > canvas.height) {
@@ -46,11 +53,10 @@ function tick(currentTime: number) {
       circle.vy += gravity;
       circle.y += circle.vy;
     }
+    circle.draw();
   }
 
   for (let [key, goal] of goals) {
-    goal.draw();
-
     if (goal.x + goal.width > canvas.width || goal.x <= 0) {
       goal.vx = -goal.vx;
     }
@@ -61,12 +67,13 @@ function tick(currentTime: number) {
         continue;
       }
       if (goal.type === GoalType.AIM) {
-        console.log("good");
+        gameState = GameState.WIN;
       } else {
-        console.log("bad");
+        gameState = GameState.LOSS;
       }
       goals.delete(key);
     }
+    goal.draw();
   }
   lastTime = currentTime;
 
@@ -89,8 +96,8 @@ gravitySlider?.addEventListener("input", function () {
 });
 
 function start() {
-  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
-  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
+  gameState = GameState.STARTED;
+  initGoals3();
 
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
@@ -107,7 +114,12 @@ function start() {
     mouseCircle.x = x;
     mouseCircle.y = y;
   });
-  window.requestAnimationFrame(tick);
+  requestAnimationFrame(tick);
+}
+
+function initGoals3() {
+  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
 }
 
 function canNotDrawCricle(x: number, y: number, radius: number): boolean {
@@ -119,6 +131,7 @@ function canNotDrawCricle(x: number, y: number, radius: number): boolean {
   );
 }
 
+// definitely not gpt
 function checkCollision(goal: Goal, circle: Circle): boolean {
   // Calculate the closest point on the goal's rectangle to the circle's center
   const closestX = Math.max(goal.x, Math.min(circle.x, goal.x + goal.width));
@@ -133,4 +146,12 @@ function checkCollision(goal: Goal, circle: Circle): boolean {
 
   // Check if the squared distance is less than the squared radius
   return distanceSquared < circle.radius * circle.radius;
+}
+
+function handleGameOver() {
+  if (gameState === GameState.WIN) {
+    console.log("WIN");
+  } else {
+    console.log("LOSS");
+  }
 }
