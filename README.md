@@ -32,4 +32,4 @@ Make a ball touch a red platform, while avoiding blue ones
 
 ## IDDQD
 
-Set gravity to zero and click wherever you want
+Set gravity to zero or click directly on the red platform

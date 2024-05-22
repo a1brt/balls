@@ -9,13 +9,15 @@ let ctx: CanvasRenderingContext2D;
 let gameState: GameState;
 
 let mouseball: Ball;
-const balls: Ball[] = [];
+let balls: Ball[];
 const platforms = new Map<number, Platform>();
 
 let lastTime = 0;
 let elasticity = 0.5;
 let gravity = 0.5;
 const ballRadius = 25;
+
+let currentRequest: number | null = null;
 
 let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
 elasticitySlider?.addEventListener("input", function () {
@@ -31,7 +33,7 @@ let levels = <HTMLInputElement>document.getElementById("levels");
 levels?.addEventListener("change", function () {
   switch (this.value) {
     case "basic":
-      platforms.clear();
+      initBasic();
       break;
     case "l1":
       initLevel1();
@@ -64,6 +66,7 @@ window.onload = () => {
 
   ctx = c;
   mouseball = new Ball(ctx, 0, 0, ballRadius, 0);
+  start();
 };
 
 function tick(currentTime: number) {
@@ -72,7 +75,6 @@ function tick(currentTime: number) {
     return;
   }
 
-  // don't really know what to do with this
   const deltaTime = currentTime - lastTime;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -101,7 +103,7 @@ function tick(currentTime: number) {
     platform.x += platform.vx;
     platform.draw();
 
-    // check if any ball colides with the currecnt platform
+    // check if any ball collides with the current platform
     for (let ball of balls) {
       if (!checkCollision(platform, ball)) {
         continue;
@@ -116,37 +118,44 @@ function tick(currentTime: number) {
   }
   lastTime = currentTime;
 
-  requestAnimationFrame(tick);
+  currentRequest = requestAnimationFrame(tick);
 }
 
-document.getElementById("start")?.addEventListener("click", function () {
-  this.style.visibility = "hidden";
-  start();
-});
-
 function start() {
+  canvas.addEventListener("mousedown", onMouseDown);
+  canvas.addEventListener("mousemove", onMouseMove);
+  initBasic();
+}
+
+function onMouseDown(e: MouseEvent) {
+  const x = e.clientX - canvas.offsetLeft;
+  const y = e.clientY - canvas.offsetTop;
+
+  if (canNotDrawCricle(x, y, ballRadius)) {
+    return;
+  }
+  balls.push(new Ball(ctx, x, y, ballRadius, elasticity));
+}
+
+function onMouseMove(e: MouseEvent) {
+  const x = e.clientX - canvas.offsetLeft;
+  const y = e.clientY - canvas.offsetTop;
+  mouseball.x = x;
+  mouseball.y = y;
+}
+
+function initBasic() {
+  if (currentRequest) {
+    cancelAnimationFrame(currentRequest);
+  }
+  platforms.clear();
+  balls = [];
   gameState = GameState.STARTED;
-
-  canvas.addEventListener("mousedown", function (e) {
-    const x = e.clientX - canvas.offsetLeft;
-    const y = e.clientY - canvas.offsetTop;
-
-    if (canNotDrawCricle(x, y, ballRadius)) {
-      return;
-    }
-    balls.push(new Ball(ctx, x, y, ballRadius, elasticity));
-  });
-  canvas.addEventListener("mousemove", function (e) {
-    const x = e.clientX - canvas.offsetLeft;
-    const y = e.clientY - canvas.offsetTop;
-    mouseball.x = x;
-    mouseball.y = y;
-  });
-  requestAnimationFrame(tick);
+  currentRequest = requestAnimationFrame(tick);
 }
 
 function initLevel1() {
-  platforms.clear();
+  initBasic();
   platforms.set(
     1,
     new Platform(ctx, 200, 300, ballRadius * 2.5, PlatformType.AIM)
@@ -154,7 +163,7 @@ function initLevel1() {
 }
 
 function initLevel2() {
-  platforms.clear();
+  initBasic();
   platforms.set(
     2,
     new Platform(ctx, 250, 220, ballRadius * 2.5, PlatformType.AVOID)
@@ -166,7 +175,7 @@ function initLevel2() {
 }
 
 function initLevel3() {
-  platforms.clear();
+  initBasic();
   platforms.set(
     1,
     new Platform(ctx, 200, 200, ballRadius * 2.5, PlatformType.AIM)
@@ -178,7 +187,7 @@ function initLevel3() {
 }
 
 function initLevel4() {
-  platforms.clear();
+  initBasic();
   platforms.set(
     1,
     new Platform(ctx, 200, 400, ballRadius * 2.5, PlatformType.AIM)
@@ -206,9 +215,7 @@ function canNotDrawCricle(x: number, y: number, radius: number): boolean {
   );
 }
 
-// definitely not gpt
 function checkCollision(platform: Platform, ball: Ball): boolean {
-  // Calculate the closest point on the platforms's rectangle to the ball's center
   const closestX = Math.max(
     platform.x,
     Math.min(ball.x, platform.x + platform.width)
@@ -218,14 +225,11 @@ function checkCollision(platform: Platform, ball: Ball): boolean {
     Math.min(ball.y, platform.y + platform.height)
   );
 
-  // Calculate the distance between the ball's center and this closest point
   const distanceX = ball.x - closestX;
   const distanceY = ball.y - closestY;
 
-  // Calculate the squared distance
   const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
-  // Check if the squared distance is less than the squared radius
   return distanceSquared < ball.radius * ball.radius;
 }
 
