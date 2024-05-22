@@ -5,12 +5,14 @@ import "./style.css";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 let ctx: CanvasRenderingContext2D;
+
+let mouseCircle: Circle;
 const circles: Circle[] = [];
-const goals: Goal[] = [];
+const goals = new Map<number, Goal>();
+
 let lastTime = 0;
 let elasticity = 0.5;
 let gravity = 0.5;
-let mouseCircle: Circle;
 const circleRadius = 25;
 
 window.onload = () => {
@@ -26,7 +28,7 @@ window.onload = () => {
 };
 
 function tick(currentTime: number) {
-  const deltaTime = currentTime - lastTime;   // don't really know what to do with this
+  const deltaTime = currentTime - lastTime; // don't really know what to do with this
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
@@ -46,7 +48,7 @@ function tick(currentTime: number) {
     }
   }
 
-  for (let goal of goals) {
+  for (let [key, goal] of goals) {
     goal.draw();
 
     if (goal.x + goal.width > canvas.width || goal.x <= 0) {
@@ -55,13 +57,19 @@ function tick(currentTime: number) {
     goal.x += goal.vx;
 
     for (let circle of circles) {
-      if (checkCollision(goal, circle) ) {
-        console.log("boom");
+      if (!checkCollision(goal, circle)) {
+        continue;
       }
+      if (goal.type === GoalType.AIM) {
+        console.log("good");
+      } else {
+        console.log("bad");
+      }
+      goals.delete(key);
     }
   }
   lastTime = currentTime;
-  
+
   window.requestAnimationFrame(tick);
 }
 
@@ -81,8 +89,8 @@ gravitySlider?.addEventListener("input", function () {
 });
 
 function start() {
-  goals.push(new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
-  goals.push(new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
+  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
 
   canvas.addEventListener("mousedown", function (e) {
     const x = e.clientX - canvas.offsetLeft;
