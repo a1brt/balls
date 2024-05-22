@@ -69,7 +69,8 @@ function tick(currentTime: number) {
     return;
   }
 
-  const deltaTime = currentTime - lastTime; // don't really know what to do with this
+  // don't really know what to do with this
+  // const deltaTime = currentTime - lastTime;      
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
