@@ -75,6 +75,7 @@ function tick(currentTime: number) {
     return;
   }
 
+  // don't really know what to do with this
   const deltaTime = currentTime - lastTime;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
