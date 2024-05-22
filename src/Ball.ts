@@ -1,6 +1,4 @@
-// Probably should rename this to ball at this point
-
-export class Circle {
+export class Ball {
   ctx: CanvasRenderingContext2D;
   x: number;
   y: number;

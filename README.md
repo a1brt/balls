@@ -7,6 +7,7 @@ npm run intall
 ```
 
 ## How to run
+
 ```
 npm run dev
 ```
@@ -14,16 +15,21 @@ npm run dev
 ## How to play
 
 ### Silders
+
 - elasticity:
-        Defines how elastic the next created ball will be. Values rage from 0 to 100 with 0 having the elasticity of a rock and 100 of Monkey D. Luffy
-    
+  Defines how bouncy the next created ball will be. Values rage from 0 to 100 with 0 having the elasticity of a rock and 100 of Monkey D. Luffy
 - gravity:
-        Defines how fast the balls will fall down. Values range from 0 to 100 with 0 meaning balls will just stop in mid air and 100 being normal gravity
+  Defines how fast the balls will fall down. Values range from 0 to 100 with 0 meaning balls will just stop in mid air and 100 being normal gravity
 
 ### Levels
+
 - Basic Requirements: No platforms, just play with the balls
-- Levels 1-4: Contain moving platforms that add win and loss conditions 
+- Levels 1-4: Contain moving platforms that add win and loss conditions
 
 ### Win condition
 
 Make a ball touch a red platform, while avoiding blue ones
+
+## IDDQD
+
+Set gravity to zero an click wherever you want

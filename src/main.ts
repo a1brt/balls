@@ -1,21 +1,21 @@
-import { Circle } from "./Circle";
+import { Ball } from "./Ball";
 import { GameState } from "./GameState";
-import { Goal } from "./Goal";
-import { GoalType } from "./GoalTypes";
+import { Platform } from "./Platform";
+import { PlatformType } from "./PlatformTypes";
 import "./style.css";
 
 const canvas = <HTMLCanvasElement>document.getElementById("canvas");
 let ctx: CanvasRenderingContext2D;
 let gameState: GameState;
 
-let mouseCircle: Circle;
-const circles: Circle[] = [];
-const goals = new Map<number, Goal>();
+let mouseball: Ball;
+const balls: Ball[] = [];
+const platforms = new Map<number, Platform>();
 
 let lastTime = 0;
 let elasticity = 0.5;
 let gravity = 0.5;
-const circleRadius = 25;
+const ballRadius = 25;
 
 let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
 elasticitySlider?.addEventListener("input", function () {
@@ -31,22 +31,25 @@ let levels = <HTMLInputElement>document.getElementById("levels");
 levels?.addEventListener("change", function () {
   switch (this.value) {
     case "basic":
-      goals.clear();
+      platforms.clear();
       break;
     case "l1":
-      initGoals1();
+      initLevel1();
       break;
     case "l2":
-      initGoals2();
+      initLevel2();
       break;
     case "l3":
-      initGoals3();
+      initLevel3();
+      break;
+    case "l4":
+      initLevel4();
       break;
     default:
       console.error(
         "Not scientifically possible error: level option not defined"
       );
-      goals.clear();
+      platforms.clear();
       break;
   }
 });
@@ -60,7 +63,7 @@ window.onload = () => {
   }
 
   ctx = c;
-  mouseCircle = new Circle(ctx, 0, 0, circleRadius, 0);
+  mouseball = new Ball(ctx, 0, 0, ballRadius, 0);
 };
 
 function tick(currentTime: number) {
@@ -70,50 +73,50 @@ function tick(currentTime: number) {
   }
 
   // don't really know what to do with this
-  // const deltaTime = currentTime - lastTime;      
+  const deltaTime = currentTime - lastTime;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!canNotDrawCricle(mouseCircle.x, mouseCircle.y, circleRadius)) {
-    mouseCircle.drawOrigin();
+  if (!canNotDrawCricle(mouseball.x, mouseball.y, ballRadius)) {
+    mouseball.drawOrigin();
   }
-  for (let circle of circles) {
+  for (let ball of balls) {
     if (gravity === 0) {
-      circle.draw();
+      ball.draw();
       continue;
     }
-    if (circle.y + circle.radius > canvas.height) {
-      circle.vy = -circle.vy * circle.elasticity;
-      circle.y = canvas.height - circle.radius;
+    if (ball.y + ball.radius > canvas.height) {
+      ball.vy = -ball.vy * ball.elasticity;
+      ball.y = canvas.height - ball.radius;
     } else {
-      circle.vy += gravity;
-      circle.y += circle.vy;
+      ball.vy += gravity;
+      ball.y += ball.vy;
     }
-    circle.draw();
+    ball.draw();
   }
 
-  for (let [key, goal] of goals) {
-    if (goal.x + goal.width > canvas.width || goal.x <= 0) {
-      goal.vx = -goal.vx;
+  for (let [key, platform] of platforms) {
+    if (platform.x + platform.width > canvas.width || platform.x <= 0) {
+      platform.vx = -platform.vx;
     }
-    goal.x += goal.vx;
-    goal.draw();
+    platform.x += platform.vx;
+    platform.draw();
 
-    // check if any circle colides with the currecnt goal
-    for (let circle of circles) {
-      if (!checkCollision(goal, circle)) {
+    // check if any ball colides with the currecnt platform
+    for (let ball of balls) {
+      if (!checkCollision(platform, ball)) {
         continue;
       }
-      if (goal.type === GoalType.AIM) {
+      if (platform.type === PlatformType.AIM) {
         gameState = GameState.WIN;
       } else {
         gameState = GameState.LOSS;
       }
-      goals.delete(key);
+      platforms.delete(key);
     }
   }
   lastTime = currentTime;
 
-  window.requestAnimationFrame(tick);
+  requestAnimationFrame(tick);
 }
 
 document.getElementById("start")?.addEventListener("click", function () {
@@ -128,35 +131,70 @@ function start() {
     const x = e.clientX - canvas.offsetLeft;
     const y = e.clientY - canvas.offsetTop;
 
-    if (canNotDrawCricle(x, y, circleRadius)) {
+    if (canNotDrawCricle(x, y, ballRadius)) {
       return;
     }
-    circles.push(new Circle(ctx, x, y, circleRadius, elasticity));
+    balls.push(new Ball(ctx, x, y, ballRadius, elasticity));
   });
   canvas.addEventListener("mousemove", function (e) {
     const x = e.clientX - canvas.offsetLeft;
     const y = e.clientY - canvas.offsetTop;
-    mouseCircle.x = x;
-    mouseCircle.y = y;
+    mouseball.x = x;
+    mouseball.y = y;
   });
   requestAnimationFrame(tick);
 }
 
-function initGoals1() {
-  goals.clear();
-  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
+function initLevel1() {
+  platforms.clear();
+  platforms.set(
+    1,
+    new Platform(ctx, 200, 300, ballRadius * 2.5, PlatformType.AIM)
+  );
 }
 
-function initGoals2() {
-  goals.clear();
-  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
-  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
+function initLevel2() {
+  platforms.clear();
+  platforms.set(
+    2,
+    new Platform(ctx, 250, 220, ballRadius * 2.5, PlatformType.AVOID)
+  );
+  platforms.set(
+    1,
+    new Platform(ctx, 100, 300, ballRadius * 2.5, PlatformType.AIM)
+  );
 }
 
-function initGoals3() {
-  goals.clear();
-  goals.set(1, new Goal(ctx, 200, 200, circleRadius * 2.5, GoalType.AIM));
-  goals.set(2, new Goal(ctx, 200, 180, circleRadius * 2.5, GoalType.AVOID));
+function initLevel3() {
+  platforms.clear();
+  platforms.set(
+    1,
+    new Platform(ctx, 200, 200, ballRadius * 2.5, PlatformType.AIM)
+  );
+  platforms.set(
+    2,
+    new Platform(ctx, 200, 180, ballRadius * 2.5, PlatformType.AVOID)
+  );
+}
+
+function initLevel4() {
+  platforms.clear();
+  platforms.set(
+    1,
+    new Platform(ctx, 200, 400, ballRadius * 2.5, PlatformType.AIM)
+  );
+  platforms.set(
+    2,
+    new Platform(ctx, 200, 380, ballRadius * 2.5, PlatformType.AVOID)
+  );
+  platforms.set(
+    3,
+    new Platform(ctx, 250, 300, ballRadius * 2.5, PlatformType.AVOID)
+  );
+  platforms.set(
+    4,
+    new Platform(ctx, 50, 180, ballRadius * 2.5, PlatformType.AVOID)
+  );
 }
 
 function canNotDrawCricle(x: number, y: number, radius: number): boolean {
@@ -169,20 +207,26 @@ function canNotDrawCricle(x: number, y: number, radius: number): boolean {
 }
 
 // definitely not gpt
-function checkCollision(goal: Goal, circle: Circle): boolean {
-  // Calculate the closest point on the goal's rectangle to the circle's center
-  const closestX = Math.max(goal.x, Math.min(circle.x, goal.x + goal.width));
-  const closestY = Math.max(goal.y, Math.min(circle.y, goal.y + goal.height));
+function checkCollision(platform: Platform, ball: Ball): boolean {
+  // Calculate the closest point on the platforms's rectangle to the ball's center
+  const closestX = Math.max(
+    platform.x,
+    Math.min(ball.x, platform.x + platform.width)
+  );
+  const closestY = Math.max(
+    platform.y,
+    Math.min(ball.y, platform.y + platform.height)
+  );
 
-  // Calculate the distance between the circle's center and this closest point
-  const distanceX = circle.x - closestX;
-  const distanceY = circle.y - closestY;
+  // Calculate the distance between the ball's center and this closest point
+  const distanceX = ball.x - closestX;
+  const distanceY = ball.y - closestY;
 
   // Calculate the squared distance
   const distanceSquared = distanceX * distanceX + distanceY * distanceY;
 
   // Check if the squared distance is less than the squared radius
-  return distanceSquared < circle.radius * circle.radius;
+  return distanceSquared < ball.radius * ball.radius;
 }
 
 function handleGameOver() {

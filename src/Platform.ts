@@ -1,11 +1,11 @@
-import { GoalType } from "./GoalTypes";
+import { PlatformType } from "./PlatformTypes";
 
-export class Goal {
+export class Platform {
   ctx: CanvasRenderingContext2D;
   x: number;
   y: number;
   width: number;
-  type: GoalType;
+  type: PlatformType;
   vx = 1;
   height = 5;
   constructor(
@@ -13,7 +13,7 @@ export class Goal {
     x: number,
     y: number,
     width: number,
-    type: GoalType
+    type: PlatformType
   ) {
     this.ctx = ctx;
     this.x = x;
@@ -23,7 +23,7 @@ export class Goal {
   }
 
   draw() {
-    this.ctx.fillStyle = this.type === GoalType.AIM ? "red" : "blue";
+    this.ctx.fillStyle = this.type === PlatformType.AIM ? "red" : "blue";
     this.ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 }
