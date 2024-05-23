@@ -171,15 +171,18 @@ function checkCollision(platform: Platform, ball: Ball): boolean {
 
 function handleGameOver() {
   const gameEndScreen = document.getElementById("game-end")!;
-  console.log(gameEndScreen);
 
   if (gameState === GameState.WIN) {
-    gameEndScreen.innerHTML = "Level Cleared";
+    gameEndScreen.innerHTML = "<p>Level Cleared</p>";
     gameEndScreen.style.color = "green";
   } else {
-    gameEndScreen.innerHTML = "Level Failed";
+    gameEndScreen.innerHTML = "<p>Level Failed</p>";
     gameEndScreen.style.color = "red";
   }
+  gameEndScreen.innerHTML += "<button id='retry-button'>Retry</button>";
+  document
+    .getElementById("retry-button")!
+    .addEventListener("click", () => levels.dispatchEvent(new Event("change")));
 }
 
 function initBasic() {
