@@ -2,23 +2,32 @@
   border: 1px solid black;
 }
 
-.container{
- width: 100%;
- display: flex;
- justify-content: center;
- gap: 30px;
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
 }
 
-.controlls{
+.controlls {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 10px;
 }
 
-.slidecontainer{
+.slidecontainer {
   display: flex;
   justify-content: space-between;
   width: 100%;
   gap: 10px;
+}
+
+#levels {
+  font-size: 1rem;
+  padding: 3px;
+}
+
+#game-end {
+  margin: auto;
+  font-size: 2rem;
 }

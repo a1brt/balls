@@ -29,7 +29,10 @@ window.onload = () => {
 
   ctx = c;
   mouseball = new Ball(ctx, 0, 0, ballRadius, 0);
-  start();
+
+  canvas.addEventListener("mousedown", onMouseDown);
+  canvas.addEventListener("mousemove", onMouseMove);
+  initBasic();
 };
 
 let elasticitySlider = <HTMLInputElement>document.getElementById("elasticity");
@@ -122,12 +125,6 @@ function tick(currentTime: number) {
   currentRequest = requestAnimationFrame(tick);
 }
 
-function start() {
-  canvas.addEventListener("mousedown", onMouseDown);
-  canvas.addEventListener("mousemove", onMouseMove);
-  initBasic();
-}
-
 function onMouseDown(e: MouseEvent) {
   const x = e.clientX - canvas.offsetLeft;
   const y = e.clientY - canvas.offsetTop;
@@ -145,10 +142,51 @@ function onMouseMove(e: MouseEvent) {
   mouseball.y = y;
 }
 
+function canNotDrawCricle(x: number, y: number, radius: number): boolean {
+  return (
+    x - radius < 0 ||
+    x + radius > canvas.width ||
+    y - radius < 0 ||
+    y + radius > canvas.height
+  );
+}
+
+function checkCollision(platform: Platform, ball: Ball): boolean {
+  const closestX = Math.max(
+    platform.x,
+    Math.min(ball.x, platform.x + platform.width)
+  );
+  const closestY = Math.max(
+    platform.y,
+    Math.min(ball.y, platform.y + platform.height)
+  );
+
+  const distanceX = ball.x - closestX;
+  const distanceY = ball.y - closestY;
+
+  const distanceSquared = distanceX * distanceX + distanceY * distanceY;
+
+  return distanceSquared < ball.radius * ball.radius;
+}
+
+function handleGameOver() {
+  const gameEndScreen = document.getElementById("game-end")!;
+  console.log(gameEndScreen);
+
+  if (gameState === GameState.WIN) {
+    gameEndScreen.innerHTML = "Level Cleared";
+    gameEndScreen.style.color = "green";
+  } else {
+    gameEndScreen.innerHTML = "Level Failed";
+    gameEndScreen.style.color = "red";
+  }
+}
+
 function initBasic() {
   if (currentRequest) {
     cancelAnimationFrame(currentRequest);
   }
+  document.getElementById("game-end")!.innerHTML = "";
   platforms.clear();
   balls = [];
   gameState = GameState.STARTED;
@@ -205,39 +243,4 @@ function initLevel4() {
     4,
     new Platform(ctx, 50, 180, ballRadius * 2.5, PlatformType.AVOID)
   );
-}
-
-function canNotDrawCricle(x: number, y: number, radius: number): boolean {
-  return (
-    x - radius < 0 ||
-    x + radius > canvas.width ||
-    y - radius < 0 ||
-    y + radius > canvas.height
-  );
-}
-
-function checkCollision(platform: Platform, ball: Ball): boolean {
-  const closestX = Math.max(
-    platform.x,
-    Math.min(ball.x, platform.x + platform.width)
-  );
-  const closestY = Math.max(
-    platform.y,
-    Math.min(ball.y, platform.y + platform.height)
-  );
-
-  const distanceX = ball.x - closestX;
-  const distanceY = ball.y - closestY;
-
-  const distanceSquared = distanceX * distanceX + distanceY * distanceY;
-
-  return distanceSquared < ball.radius * ball.radius;
-}
-
-function handleGameOver() {
-  if (gameState === GameState.WIN) {
-    console.log("WIN");
-  } else {
-    console.log("LOSS");
-  }
 }
