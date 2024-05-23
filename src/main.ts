@@ -17,7 +17,7 @@ let elasticity = 0.5;
 let gravity = 0.5;
 const ballRadius = 25;
 
-let currentRequest: number | null = null;
+let currentRequest = 0;
 
 window.onload = () => {
   const c = canvas.getContext("2d");
